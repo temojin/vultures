@@ -1,4 +1,4 @@
-char *tilename_reference[1057] = {
+std::string tilename_reference[1057] = {
 		"monster.ant or other insect.giant ant",
 		"monster.ant or other insect.killer bee",
 		"monster.ant or other insect.soldier ant",
