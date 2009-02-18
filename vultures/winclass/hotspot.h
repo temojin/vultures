@@ -1,3 +1,6 @@
+/* Copyright (c) Daniel Thaler, 2008                              */
+/* NetHack may be freely redistributed.  See license for details. */
+
 #ifndef _hotspot_h_
 #define _hotspot_h_
 
@@ -7,9 +10,8 @@
 class hotspot : public window
 {
 public:
-	hotspot(window *p, int nh_wt, window_type wt);
-	virtual int draw();
-	virtual eventresult event_handler(window* target, void* result, SDL_Event* event);
+	hotspot(window *parent, int x, int y, int w, int h, int menu_id, string name);
+	virtual bool draw();
 };
 
 

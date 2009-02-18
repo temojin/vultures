@@ -13,9 +13,13 @@ extern "C" {
 
 
 extern struct window_procs vultures_procs;
+extern int vultures_whatis_active;
 
 
 extern void win_vultures_init();
+extern int vultures_find_menu_accelerator(char *used_accelerators);
+extern void vultures_bail(const char *mesg);
+
 
 /* external declarations */
 extern void vultures_init_nhwindows(int *, char **);
@@ -46,6 +50,7 @@ extern void vultures_cliparound(int, int);
 #ifdef POSITIONBAR
 extern void vultures_update_positionbar(char *);
 #endif
+extern void vultures_print_glyph(winid, XCHAR_P, XCHAR_P, int);
 extern void vultures_raw_print(const char *);
 extern void vultures_raw_print_bold(const char *);
 extern int vultures_nhgetch();
@@ -69,13 +74,6 @@ extern short set_vultures_font_name(winid, char *);
 #endif
 extern char * vultures_get_color_string();
 #endif
-
-
-extern void vultures_bail(const char *mesg);
-
-
-extern int vultures_whatis_active;
-
 
 
 #ifdef __cplusplus
