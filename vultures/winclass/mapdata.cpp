@@ -170,7 +170,7 @@ void mapdata::clear()
 		}
 	
 	/* notify observers */
-	for (vector<mapviewer*>::iterator i = views.begin(); i != views.end(); ++i)
+	for (std::vector<mapviewer*>::iterator i = views.begin(); i != views.end(); ++i)
 		(*i)->map_clear();
 }
 
@@ -640,12 +640,14 @@ void mapdata::set_map_data(glyph_type type, int x, int y, int newval, bool force
 			/* raw glyph values are only stored, not printed */
 			map_glyph[y][x] = newval;
 			return;
+    default:
+      throw "Invalid type for map data";
 	}
 
 	if ((*data_array)[y][x] != newval || force) {
 		prevtile = (*data_array)[y][x];
 
-		for (vector<mapviewer*>::iterator i = views.begin(); i != views.end(); ++i)
+		for (std::vector<mapviewer*>::iterator i = views.begin(); i != views.end(); ++i)
 			(*i)->map_update(type, prevtile, newval, x, y);
 		
 		(*data_array)[y][x] = newval;
@@ -671,10 +673,10 @@ int mapdata::get_glyph(glyph_type type, int x, int y) const
 }
 
 
-string mapdata::map_square_description(point target, int include_seen)
+std::string mapdata::map_square_description(point target, int include_seen)
 {
 	struct permonst *pm;
-	string out_str = "";
+  std::string out_str = "";
 	char monbuf[BUFSZ], temp_buf[BUFSZ], coybuf[BUFSZ], look_buf[BUFSZ];
 	struct monst *mtmp = (struct monst *) 0;
 	const char *firstmatch;
@@ -990,7 +992,7 @@ void mapdata::add_viewer(mapviewer *v)
 
 void mapdata::del_viewer(mapviewer *v)
 {
-	for (vector<mapviewer*>::iterator i = views.begin(); i != views.end(); ++i) {
+	for (std::vector<mapviewer*>::iterator i = views.begin(); i != views.end(); ++i) {
 		if (*i == v) {
 			views.erase(i);
 			return;
