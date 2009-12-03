@@ -1,5 +1,8 @@
 /* NetHack may be freely redistributed.  See license for details. */
 
+#include "vultures_sdl.h" /* XXX this must be the first include,
+                             no idea why but it won't compile otherwise */
+
 extern "C" {
 #include "hack.h"
 
@@ -12,7 +15,6 @@ extern const char *disrobing;
 #include "vultures_gra.h"
 #include "vultures_txt.h"
 #include "vultures_win.h"
-#include "vultures_sdl.h"
 #include "vultures_mou.h"
 #include "vultures_tile.h"
 
@@ -41,11 +43,7 @@ bool inventory::draw()
 {
   std::string stored_caption;
 	char label[32];
-	int ix ,iy, iw, ih, labelwidth, buttonspace;
-
-	buttonspace = 0;
-	if (select_how != PICK_NONE)
-		buttonspace = vultures_get_lineheight(V_FONT_LARGE) + 14;
+	int ix ,iy, iw, ih, labelwidth;
 
 	/* draw the window, but prevent draw_mainwin from drawing the caption */
 	stored_caption = caption;
@@ -73,13 +71,16 @@ bool inventory::draw()
 							iy+headline_height/2+2, CLR32_WHITE, CLR32_GRAY20);
 
 	if (ow_ncols > ow_vcols) {
-		vultures_line(x, y+h-buttonspace-25, x+w-1, y+h-buttonspace-25, CLR32_GRAY77);
 		
-		snprintf(label, 32, "%d - %d / %d", ow_firstcol + 1, ow_firstcol + ow_vcols, ow_ncols);
+    if ( ow_firstcol + 1 == ow_firstcol + ow_vcols )
+      snprintf(label, 32, "Page %d of %d", ow_firstcol + 1, ow_ncols);
+    else
+      snprintf(label, 32, "Pages %d to %d of %d", ow_firstcol + 1, ow_firstcol + ow_vcols, ow_ncols);
+
 		labelwidth = vultures_text_length(V_FONT_MENU, label);
 
 		vultures_put_text_shadow(V_FONT_MENU, label, vultures_screen, x+(w-labelwidth)/2,
-								y+h-buttonspace-18, CLR32_BLACK, CLR32_GRAY20);
+								y+h-21, CLR32_BLACK, CLR32_GRAY20);
 	}
 
 	return 1;
@@ -158,6 +159,7 @@ eventresult inventory::context_menu(objitemwin *target)
 	}
 
 	menu->add_item("Wield", V_INVACTION_WIELD);
+	menu->add_item("Quiver", V_INVACTION_QUIVER);
 
 	if (target->obj->owornmask)
 		menu->add_item("Remove", V_INVACTION_REMOVE);
@@ -187,6 +189,7 @@ eventresult inventory::context_menu(objitemwin *target)
 			case V_INVACTION_WEAR:  key = 'W'; break;
 			case V_INVACTION_PUT_ON:key = 'P'; break;
 			case V_INVACTION_WIELD: key = 'w'; break;
+			case V_INVACTION_QUIVER: key = 'Q'; break;
 			case V_INVACTION_REMOVE:
 				/* we call a bunch of functions in do_wear.c directly here;
 					* we can do so safely because take_off() directly accounts for
@@ -688,24 +691,32 @@ void inventory::layout()
 	}
 
 	if (select_how != PICK_NONE) {
-		int btn1_width = vultures_text_length(V_FONT_MENU, "Accept") + 14;
+    int btn1_width = 0;
+    if ( select_how == PICK_ANY )
+		  btn1_width = vultures_text_length(V_FONT_MENU, "Accept") + 14;
 		int btn2_width = vultures_text_length(V_FONT_MENU, "Cancel") + 14;
 		int max_width = (btn1_width > btn2_width) ? btn1_width : btn2_width;
-		int total_width = 2 * max_width + 10;
+		int total_width = max_width;
 
 		h += textheight + 14;
 
-		btn = new button(this, "Accept", V_MENU_ACCEPT, '\0');
-		btn->h = textheight + 10;
-		btn->y = h - border_bottom - (textheight + 12);
-		btn->w = max_width;
-		btn->x = (w - rightoffset - leftoffset - total_width) / 2 + leftoffset;
+    if ( select_how == PICK_ANY )
+    {
+      total_width += max_width + 10;
+      btn = new button(this, "Accept", V_MENU_ACCEPT, '\0');
+      btn->h = textheight + 10;
+      btn->y = h - border_bottom - (textheight + 12);
+      btn->w = max_width;
+      btn->x = (w - rightoffset - leftoffset - total_width) / 2 + leftoffset;
+    }
 
 		btn = new button(this, "Cancel", V_MENU_CANCEL, '\0');
 		btn->h = textheight + 10;
 		btn->y = h - border_bottom - (textheight + 12);
 		btn->w = max_width;
-		btn->x = (w - rightoffset - leftoffset - total_width) / 2 + leftoffset + max_width + 10;
+		btn->x = (w - rightoffset - leftoffset - total_width) / 2 + leftoffset;
+    if ( select_how == PICK_ANY )
+      btn->x += max_width + 10;
 	} else {
 		btn = new button(this, "", V_INV_CLOSE, '\0');
 		btn->visible = 1;

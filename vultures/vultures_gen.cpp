@@ -1,5 +1,8 @@
 /* NetHack may be freely redistributed.  See license for details. */
 
+#include "vultures_sdl.h" /* XXX this must be the first include,
+                             no idea why but it won't compile otherwise */
+
 #include <stdlib.h>
 
 #ifdef WIN32
@@ -10,7 +13,6 @@
 
 #include "hack.h"
 
-#include "vultures_sdl.h"
 #include "vultures_gen.h"
 #include "vultures_opt.h"
 
@@ -30,7 +32,7 @@ static const std::string slash = "/";
 General functions
 --------------------------------------------------------------------------*/
 
-char *vultures_basename(const char *filename)
+char *vultures_basename(char *filename)
 {
 	char *basename,	*basename2;
 
@@ -158,7 +160,7 @@ void vultures_init_gamepath(void)
 Log file writing
 --------------------------------------------------------------------------*/
 
-void vultures_write_log_va(int msgtype, const char *file, int line, const char *logmessage, va_list args)
+void vultures_write_log_va(int msgtype, char *file, int line, const char *logmessage, va_list args)
 {
 	FILE *f = NULL;
 
@@ -206,7 +208,7 @@ void vultures_write_log_va(int msgtype, const char *file, int line, const char *
 }
 
 
-void vultures_write_log(int msgtype, const char *file, int line, const char *logmessage, ...)
+void vultures_write_log(int msgtype, char *file, int line, const char *logmessage, ...)
 {
 	va_list args;
 
@@ -216,7 +218,7 @@ void vultures_write_log(int msgtype, const char *file, int line, const char *log
 }
 
 
-void vultures_oom(int do_exit, const char *file, int line)
+void vultures_oom(int do_exit, char *file, int line)
 {
 	vultures_write_log(V_LOG_ERROR, file, line, "Out of memory!\n");
 	if (do_exit)

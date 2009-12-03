@@ -1,5 +1,8 @@
 /* NetHack may be freely redistributed.  See license for details. */
 
+#include "vultures_sdl.h" /* XXX this must be the first include,
+                             no idea why but it won't compile otherwise */
+
 extern "C" {
 	#include "hack.h"
 }
@@ -14,7 +17,6 @@ extern "C" {
 
 
 #include "vultures_win.h"
-#include "vultures_sdl.h"
 #include "vultures_gra.h"
 #include "vultures_opt.h"
 #include "vultures_tile.h"
@@ -104,20 +106,21 @@ void levelwin::init()
 	new hotspot(this, 20, 0, w - 40, 20, V_HOTSPOT_SCROLL_UP, "scroll up");
 
 	/* Toolbar1: inventory, map, cast spell, extended commands */
-	const tb_buttondesc tb1_desc[5] = {
+	const tb_buttondesc tb1_desc[6] = {
 		{V_HOTSPOT_BUTTON_INVENTORY, "Inventory"},
 		{V_HOTSPOT_BUTTON_MAP, "Map"},
 		{V_HOTSPOT_BUTTON_SPELLBOOK, "Cast spell"},
 		{V_HOTSPOT_BUTTON_EXTENDED, "Extended commands"},
-		{V_HOTSPOT_BUTTON_DISCOVERIES, "Show discoveries"}
+		{V_HOTSPOT_BUTTON_DISCOVERIES, "Show discoveries"},
+    {0,""}
 	};
 
 	new toolbar(this, V_WIN_TOOLBAR1, vultures_opts.show_actiontb,
 				w - 215, h - 84, V_FILENAME_TOOLBAR1, tb1_desc);
 
-
 	/* Toolbar 2: look at, previous messages, options, help */
-	const tb_buttondesc tb2_desc[5] = {
+	const tb_buttondesc tb2_desc[6] = {
+		{V_HOTSPOT_BUTTON_GOLD, "Gold"},
 		{V_HOTSPOT_BUTTON_LOOK, "Look"},
 		{V_HOTSPOT_BUTTON_MESSAGES, "Old messages"},
 		{V_HOTSPOT_BUTTON_OPTIONS, "Options"},
@@ -126,7 +129,7 @@ void levelwin::init()
 	};
 
 	new toolbar(this, V_WIN_TOOLBAR2, vultures_opts.show_helptb,
-				w - 215, h - 45, V_FILENAME_TOOLBAR2, tb2_desc);
+				w - 255, h - 45, V_FILENAME_TOOLBAR2, tb2_desc);
 	
 	/* select wall style */
 	switch (vultures_opts.wall_style)
